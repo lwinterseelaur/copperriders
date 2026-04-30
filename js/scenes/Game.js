@@ -143,6 +143,36 @@ export class GameScene extends Phaser.Scene {
     this.spawnBillboard(GAME_WIDTH * 0.6, GROUND_Y - 110);
     this.nextBillboardX = GAME_WIDTH * 1.6;
 
+    // === HAMBURG SKYLINE: Elbphilharmonie far on horizon (slow parallax) ===
+    this.skylineProps = this.add.group();
+    [GAME_WIDTH * 0.3, GAME_WIDTH * 1.1].forEach(x => {
+      const e = this.add.image(x, GROUND_Y - 4, 'elbphilharmonie')
+        .setOrigin(0.5, 1).setScale(1.4).setTint(0x4a4a5a).setAlpha(0.85)
+        .setDepth(D.smokestackFar);
+      this.skylineProps.add(e);
+    });
+
+    // === HARBOR CRANES (Hamburg port) — mid parallax ===
+    this.cranes = this.add.group();
+    [GAME_WIDTH * 0.15, GAME_WIDTH * 0.7, GAME_WIDTH * 1.4].forEach(x => {
+      const c = this.add.image(x, GROUND_Y - 4, 'harbor_crane')
+        .setOrigin(0.5, 1).setScale(1.6 + Math.random() * 0.3).setTint(0x6a7080)
+        .setDepth(D.smokestackNear);
+      this.cranes.add(c);
+    });
+
+    // === CARGO SHIPS on Elbe (slow horizon scroll) ===
+    this.ships = this.add.group();
+    this.nextShipAt = this.time.now + 3000 + Math.random() * 8000;
+
+    // === TRAIN WAGONS (mid-foreground scrolling rail line) ===
+    this.trains = this.add.group();
+    this.nextTrainAt = this.time.now + 6000 + Math.random() * 10000;
+
+    // === BIG AURUBIS HAMBURG SIGN — recurring foreground sign ===
+    this.bigSigns = this.add.group();
+    this.nextBigSignX = GAME_WIDTH * 0.9;
+
     // === SIGNAL TOWER BAND ===
     this.signalBand = this.add.container(0, GROUND_Y - 30).setDepth(D.signalTowers);
     for (let x = 0; x < GAME_WIDTH * 2; x += 60 + Math.random() * 80) {
@@ -433,6 +463,60 @@ export class GameScene extends Phaser.Scene {
     if (this.nextBillboardX < GAME_WIDTH) {
       this.spawnBillboard(GAME_WIDTH + 200, GROUND_Y - 110);
       this.nextBillboardX += GAME_WIDTH * 1.5 + Math.random() * 400;
+    }
+    // Hamburg skyline (far) — slow
+    this.skylineProps.children.iterate(e => {
+      if (!e) return;
+      e.x -= dx * 0.08;
+      if (e.x < -100) e.x = GAME_WIDTH + 200;
+    });
+    // Harbor cranes (near-far)
+    this.cranes.children.iterate(c => {
+      if (!c) return;
+      c.x -= dx * 0.18;
+      if (c.x < -60) c.x = GAME_WIDTH + 200;
+    });
+    // Cargo ships drifting on Elbe — VERY slow
+    this.ships.children.iterate(s => {
+      if (!s) return;
+      s.x -= dx * 0.05;
+      if (s.x < -200) s.destroy();
+    });
+    if (this.time.now > this.nextShipAt) {
+      const ship = this.add.image(GAME_WIDTH + 200, 180 + Math.random() * 40, 'cargo_ship')
+        .setOrigin(0.5, 0.5).setScale(1.3).setTint(0x7a7a8a).setAlpha(0.95)
+        .setDepth(D.smokestackFar);
+      this.ships.add(ship);
+      this.nextShipAt = this.time.now + 14000 + Math.random() * 16000;
+    }
+    // Train wagons — scroll faster (foreground rail line behind player)
+    this.trains.children.iterate(t => {
+      if (!t) return;
+      t.x -= dx * 0.55;
+      if (t.x < -150) t.destroy();
+    });
+    if (this.time.now > this.nextTrainAt) {
+      const baseY = GROUND_Y - 56;
+      // Spawn a 3-wagon train
+      for (let i = 0; i < 3; i++) {
+        const w = this.add.image(GAME_WIDTH + 100 + i * 132, baseY, 'train_wagon')
+          .setOrigin(0.5, 1).setScale(1).setDepth(D.signalTowers);
+        this.trains.add(w);
+      }
+      this.nextTrainAt = this.time.now + 18000 + Math.random() * 20000;
+    }
+    // Big AURUBIS HAMBURG sign — recurring as foreground prop
+    this.bigSigns.children.iterate(s => {
+      if (!s) return;
+      s.x -= dx * 0.35;
+      if (s.x < -300) s.destroy();
+    });
+    this.nextBigSignX -= dx * 0.35;
+    if (this.nextBigSignX < GAME_WIDTH) {
+      const s = this.add.image(GAME_WIDTH + 300, GROUND_Y - 130, 'aurubis_hamburg_sign')
+        .setOrigin(0.5, 1).setScale(1.2).setDepth(D.aurubisBillboard);
+      this.bigSigns.add(s);
+      this.nextBigSignX += GAME_WIDTH * 1.8 + Math.random() * 400;
     }
     this.signalBand.iterate(t => {
       if (!t) return;
