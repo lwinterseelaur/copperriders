@@ -1,7 +1,7 @@
 import * as Save from '../save.js';
 import { sfx } from '../audio.js';
 import { GAME_WIDTH, GAME_HEIGHT } from '../config.js';
-import { worldFor, HORSES, STRINGS, AURUBIS_TAGLINE } from '../data.js';
+import { worldFor, HORSES, STRINGS, COMPANY_NAME, COMPANY_LOCATION, COMPANY_TAGLINE } from '../data.js';
 
 const GROUND_Y = GAME_HEIGHT - 32;
 const PLAYER_X = 110;
@@ -35,9 +35,12 @@ const OBSTACLE_TYPES = {
   cable_spool:   { kind: 'obstacle', spriteKey: 'cable_spool',   body: { w: 18, h: 24, ox: 5,  oy: 3 }, yFromGround: 0,   srcW: 28, srcH: 28 },
   chemical_drum: { kind: 'obstacle', spriteKey: 'chemical_drum', body: { w: 12, h: 18, ox: 2,  oy: 2 }, yFromGround: 0,   srcW: 16, srcH: 22 },
   copper_sheet:  { kind: 'obstacle', spriteKey: 'copper_sheet',  body: { w: 6,  h: 32, ox: 1,  oy: 2 }, yFromGround: 0,   srcW: 8,  srcH: 36 },
-  hanging_pipe:  { kind: 'overhead', spriteKey: 'hanging_pipe',  body: { w: 32, h: 8,  ox: 4,  oy: 2 }, fromTop: 60,      srcW: 41, srcH: 12 },
-  arc_spark:     { kind: 'overhead', spriteKey: 'arc_spark',     body: { w: 14, h: 8,  ox: 3,  oy: 4 }, fromTop: 110,     srcW: 20, srcH: 14, blink: true },
-  steam_vent:    { kind: 'overhead', spriteKey: 'steam_vent',    body: { w: 18, h: 8,  ox: 3,  oy: 1 }, fromTop: 70,      srcW: 24, srcH: 18 },
+  // Overhead obstacles: yFromGround = pixels above ground TOP of sprite anchored.
+  // Tuned so body bottom is just above standing-player head height (~ground - 50)
+  // and ducked player clears.
+  hanging_pipe:  { kind: 'overhead', spriteKey: 'hanging_pipe',  body: { w: 32, h: 8,  ox: 4,  oy: 2 }, yFromGround: 60,  srcW: 41, srcH: 12 },
+  arc_spark:     { kind: 'overhead', spriteKey: 'arc_spark',     body: { w: 14, h: 8,  ox: 3,  oy: 4 }, yFromGround: 70,  srcW: 20, srcH: 14, blink: true },
+  steam_vent:    { kind: 'overhead', spriteKey: 'steam_vent',    body: { w: 18, h: 8,  ox: 3,  oy: 1 }, yFromGround: 60,  srcW: 24, srcH: 18 },
   hi_vis:        { kind: 'enemy',    spriteKey: 'hi_vis_worker', body: { w: 12, h: 18, ox: 4,  oy: 2 }, yFromGround: 0,   srcW: 20, srcH: 22 },
   forklift:      { kind: 'enemy',    spriteKey: 'forklift',      body: { w: 24, h: 14, ox: 3,  oy: 6 }, yFromGround: 0,   srcW: 32, srcH: 22 },
   drone:         { kind: 'enemy',    spriteKey: 'drone',         body: { w: 10, h: 8,  ox: 2,  oy: 2 }, yFromGround: 80,  srcW: 14, srcH: 14, hover: true },
@@ -223,14 +226,14 @@ export class GameScene extends Phaser.Scene {
     this.sparkles = this.add.group();
 
     // === HUD ===
-    const fontSm = { fontFamily: 'Courier New, monospace', fontSize: '16px', color: '#ffffff', stroke: '#000', strokeThickness: 4 };
+    const fontSm = { fontFamily: 'Courier New, monospace', fontSize: '22px', color: '#ffffff', stroke: '#000', strokeThickness: 4, fontStyle: 'bold' };
     this.hud = {
-      distance: this.add.text(10, 8, '0m', fontSm).setScrollFactor(0).setDepth(D.hud),
-      stars: this.add.text(GAME_WIDTH - 10, 8, '★ 0', { ...fontSm, color: '#ffd86b' }).setOrigin(1, 0).setScrollFactor(0).setDepth(D.hud),
-      world: this.add.text(GAME_WIDTH / 2, 8, this.currentWorld.name, { ...fontSm, fontSize: '13px', color: '#3aa0d2' }).setOrigin(0.5, 0).setScrollFactor(0).setDepth(D.hud),
-      style: this.add.text(GAME_WIDTH / 2, 30, '', { ...fontSm, fontSize: '15px', color: '#ffd86b', fontStyle: 'bold' }).setOrigin(0.5, 0).setScrollFactor(0).setDepth(D.hud),
-      health: this.add.text(10, 30, '', { ...fontSm, fontSize: '13px', color: '#ff8080' }).setScrollFactor(0).setDepth(D.hud),
-      powerup: this.add.text(GAME_WIDTH - 10, 30, '', { ...fontSm, fontSize: '13px', color: '#88ffe0' }).setOrigin(1, 0).setScrollFactor(0).setDepth(D.hud),
+      distance: this.add.text(14, 12, '0m', fontSm).setScrollFactor(0).setDepth(D.hud),
+      stars: this.add.text(GAME_WIDTH - 14, 12, '★ 0', { ...fontSm, color: '#ffd86b' }).setOrigin(1, 0).setScrollFactor(0).setDepth(D.hud),
+      world: this.add.text(GAME_WIDTH / 2, 14, this.currentWorld.name, { ...fontSm, fontSize: '18px', color: '#3aa0d2' }).setOrigin(0.5, 0).setScrollFactor(0).setDepth(D.hud),
+      style: this.add.text(GAME_WIDTH / 2, 44, '', { ...fontSm, fontSize: '20px', color: '#ffd86b' }).setOrigin(0.5, 0).setScrollFactor(0).setDepth(D.hud),
+      health: this.add.text(14, 44, '', { ...fontSm, fontSize: '18px', color: '#ff8080' }).setScrollFactor(0).setDepth(D.hud),
+      powerup: this.add.text(GAME_WIDTH - 14, 44, '', { ...fontSm, fontSize: '18px', color: '#88ffe0' }).setOrigin(1, 0).setScrollFactor(0).setDepth(D.hud),
     };
     this.updateHud();
 
@@ -311,9 +314,10 @@ export class GameScene extends Phaser.Scene {
     if (duckHeld && onGround) {
       this.player.setTexture('hero_duck');
       this.player.anims.stop();
-      // Slide boots upgrade — slightly wider duck hitbox
+      // Ducked body — short, anchored to the sprite bottom so it stays glued
+      // to the ground (prevents falling out of the world when shrinking body).
       const w = this.stats.slideBoots ? 22 : 20;
-      this.player.body.setSize(w, 16).setOffset(2, 16);
+      this.player.body.setSize(w, 14).setOffset(2, 18);
     } else if (onGround) {
       if (!this.player.anims.isPlaying) this.player.play('run');
       this.player.body.setSize(14, 28).setOffset(5, 4);
@@ -415,6 +419,12 @@ export class GameScene extends Phaser.Scene {
   // === BILLBOARDS ===
   spawnBillboard(x, y) {
     const bb = this.add.image(x, y, 'aurubis_billboard').setScale(1.4).setDepth(D.aurubisBillboard);
+    // Company name as Phaser text overlay (so renaming is a one-line change)
+    const label = this.add.text(x, y - 36, COMPANY_NAME, {
+      fontFamily: 'Courier New, monospace', fontSize: '20px',
+      color: '#0076A7', fontStyle: 'bold',
+    }).setOrigin(0.5).setDepth(D.aurubisBillboard);
+    bb.setData('label', label);
     this.billboards.add(bb);
   }
 
@@ -454,7 +464,10 @@ export class GameScene extends Phaser.Scene {
     this.billboards.children.iterate(b => {
       if (!b) return;
       b.x -= dx * 0.30;
+      const lbl = b.getData('label');
+      if (lbl) lbl.x = b.x;
       if (b.x < -150) {
+        if (lbl) lbl.destroy();
         b.destroy();
       }
     });
@@ -493,7 +506,12 @@ export class GameScene extends Phaser.Scene {
     this.trains.children.iterate(t => {
       if (!t) return;
       t.x -= dx * 0.55;
-      if (t.x < -150) t.destroy();
+      const lbl = t.getData('label');
+      if (lbl) lbl.x = t.x;
+      if (t.x < -150) {
+        if (lbl) lbl.destroy();
+        t.destroy();
+      }
     });
     if (this.time.now > this.nextTrainAt) {
       const baseY = GROUND_Y - 56;
@@ -501,20 +519,54 @@ export class GameScene extends Phaser.Scene {
       for (let i = 0; i < 3; i++) {
         const w = this.add.image(GAME_WIDTH + 100 + i * 132, baseY, 'train_wagon')
           .setOrigin(0.5, 1).setScale(1).setDepth(D.signalTowers);
+        // Tiny company label on the side
+        const lbl = this.add.text(w.x, baseY - 35, COMPANY_NAME, {
+          fontFamily: 'Courier New, monospace', fontSize: '11px',
+          color: '#ffffff', fontStyle: 'bold',
+        }).setOrigin(0.5).setDepth(D.signalTowers);
+        w.setData('label', lbl);
         this.trains.add(w);
       }
       this.nextTrainAt = this.time.now + 18000 + Math.random() * 20000;
     }
-    // Big AURUBIS HAMBURG sign — recurring as foreground prop
+    // Big company sign — recurring as foreground prop, with text overlay
     this.bigSigns.children.iterate(s => {
       if (!s) return;
       s.x -= dx * 0.35;
-      if (s.x < -300) s.destroy();
+      const lbls = s.getData('labels');
+      if (lbls) {
+        lbls.title.x = s.x + 22;
+        lbls.subtitle.x = s.x + 22;
+        lbls.tagline.x = s.x + 22;
+      }
+      if (s.x < -300) {
+        if (lbls) {
+          lbls.title.destroy();
+          lbls.subtitle.destroy();
+          lbls.tagline.destroy();
+        }
+        s.destroy();
+      }
     });
     this.nextBigSignX -= dx * 0.35;
     if (this.nextBigSignX < GAME_WIDTH) {
-      const s = this.add.image(GAME_WIDTH + 300, GROUND_Y - 130, 'aurubis_hamburg_sign')
+      const x = GAME_WIDTH + 300, y = GROUND_Y - 130;
+      const s = this.add.image(x, y, 'aurubis_hamburg_sign')
         .setOrigin(0.5, 1).setScale(1.2).setDepth(D.aurubisBillboard);
+      // Three text rows: company name, location, tagline
+      const title = this.add.text(x + 22, y - 88, COMPANY_NAME, {
+        fontFamily: 'Courier New, monospace', fontSize: '28px',
+        color: '#0076A7', fontStyle: 'bold',
+      }).setOrigin(0.5).setDepth(D.aurubisBillboard);
+      const subtitle = this.add.text(x + 22, y - 60, COMPANY_LOCATION, {
+        fontFamily: 'Courier New, monospace', fontSize: '20px',
+        color: '#222222', fontStyle: 'bold',
+      }).setOrigin(0.5).setDepth(D.aurubisBillboard);
+      const tagline = this.add.text(x + 22, y - 36, COMPANY_TAGLINE, {
+        fontFamily: 'Courier New, monospace', fontSize: '11px',
+        color: '#0076A7', fontStyle: 'bold',
+      }).setOrigin(0.5).setDepth(D.aurubisBillboard);
+      s.setData('labels', { title, subtitle, tagline });
       this.bigSigns.add(s);
       this.nextBigSignX += GAME_WIDTH * 1.8 + Math.random() * 400;
     }
@@ -772,7 +824,7 @@ export class GameScene extends Phaser.Scene {
   spawnObstacle(x, type) {
     const def = OBSTACLE_TYPES[type];
     let y;
-    if (def.kind === 'overhead') y = (def.fromTop || 80);
+    if (def.kind === 'overhead') y = GROUND_Y - (def.yFromGround || 60);
     else y = GROUND_Y - (def.yFromGround || 0);
     const ob = this.obstacles.create(x, y, def.spriteKey).setScale(2);
     ob.setOrigin(0.5, def.kind === 'overhead' ? 0 : 1);

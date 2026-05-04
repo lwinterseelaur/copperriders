@@ -27,17 +27,23 @@ export const UPGRADES = [
 ];
 
 export const HORSES = [
-  { id: 'starter',  name: 'Steckenpferd-Stefan',    cost: 0,    speed: 1.0, jump: 1.0, style: 1.0, durability: 1, luck: 1.0, desc: 'Eine Sockenpuppe auf einem Besenstiel. Jeder fängt mal an.' },
-  { id: 'flash',    name: 'Finnischer Blitz',       cost: 300,  speed: 1.3, jump: 1.0, style: 1.0, durability: 1, luck: 1.0, desc: 'Hat einen Pass. Und eine Einstellung.' },
-  { id: 'duchess',  name: 'Dressur-Herzogin',       cost: 500,  speed: 1.0, jump: 1.1, style: 1.5, durability: 1, luck: 1.0, desc: 'Von einer Großmeisterin von Hand genäht. Die Augen folgen dir.' },
-  { id: 'duct',     name: 'Panzertape-Albtraum',    cost: 400,  speed: 0.9, jump: 1.0, style: 0.7, durability: 2, luck: 1.0, desc: 'Hält dank Hoffnung und Klebstoff zusammen.' },
-  { id: 'influencer', name: 'Der Influencer',       cost: 700,  speed: 1.1, jump: 1.1, style: 1.1, durability: 1, luck: 1.5, desc: '50.000 Follower. Keiner respektiert es.' },
-  { id: 'woody',    name: 'Western-Willi',          cost: 600,  speed: 1.0, jump: 1.3, style: 0.9, durability: 1, luck: 1.0, desc: 'Cowboyhut. Fragwürdiger Akzent.' },
-  { id: 'foal',     name: 'Das Eldritch-Fohlen',    cost: 1500, speed: 0.9, jump: 1.0, style: 2.0, durability: 1, luck: 1.2, desc: 'Zu viele Augen. Die Mähne bewegt sich von allein.' },
-  { id: 'gold',     name: 'Goldener Hengst',        cost: 5000, speed: 1.2, jump: 1.2, style: 1.5, durability: 2, luck: 1.5, desc: 'Reiner Goldstoff. Ehrlich gesagt peinlich.' },
+  { id: 'starter',  name: 'Azubi-Andi',             cost: 0,    speed: 1.0, jump: 1.0, style: 1.0, durability: 1, luck: 1.0, desc: 'Frisch aus dem IAZ. Hat noch nie eine Schicht alleine gemacht.' },
+  { id: 'flash',    name: 'Schicht-Schorsch',       cost: 300,  speed: 1.3, jump: 1.0, style: 1.0, durability: 1, luck: 1.0, desc: 'Macht jede Spätschicht. Schläft am Ofen. Beschwert sich nie.' },
+  { id: 'duchess',  name: 'Anoden-Anke',            cost: 500,  speed: 1.0, jump: 1.1, style: 1.5, durability: 1, luck: 1.0, desc: '99,99 % Reinheit. 0,01 % Geduld mit Praktikanten.' },
+  { id: 'duct',     name: 'Schlacken-Sepp',         cost: 400,  speed: 0.9, jump: 1.0, style: 0.7, durability: 2, luck: 1.0, desc: 'Trägt seit 1987 denselben Helm. Kein Kratzer.' },
+  { id: 'influencer', name: 'Vorstand-Vincent',     cost: 700,  speed: 1.1, jump: 1.1, style: 1.1, durability: 1, luck: 1.5, desc: 'War zweimal in der Hütte. Trägt nie Helm. Postet auf LinkedIn.' },
+  { id: 'woody',    name: 'Hüttenmeister Helmut',   cost: 600,  speed: 1.0, jump: 1.3, style: 0.9, durability: 1, luck: 1.0, desc: 'Riecht nach Schwefel. Erzählt Geschichten von „damals".' },
+  { id: 'foal',     name: 'Tankhaus-Trolli',        cost: 1500, speed: 0.9, jump: 1.0, style: 2.0, durability: 1, luck: 1.2, desc: 'Lebt seit Jahren im Tankhaus. Niemand weiß, ob er angestellt ist.' },
+  { id: 'gold',     name: 'CEO Cu',                 cost: 5000, speed: 1.2, jump: 1.2, style: 1.5, durability: 2, luck: 1.5, desc: 'Reines Kupfer. Reiner Bonus. Reine Quartalszahlen.' },
 ];
 
-export const AURUBIS_TAGLINE = 'METALS FOR PROGRESS';
+// Fictional company name + tagline. Close to copper-industry feel
+// but distinct from any real company so we steer clear of trademark issues.
+export const COMPANY_NAME = 'CUPRION';
+export const COMPANY_LOCATION = 'HAMBURG';
+export const COMPANY_TAGLINE = 'KUPFER IN BEWEGUNG';
+// Legacy export kept so other modules still import without breaking
+export const AURUBIS_TAGLINE = COMPANY_TAGLINE;
 
 export const DEATH_QUOTES = {
   cable_spool: [
@@ -58,7 +64,7 @@ export const DEATH_QUOTES = {
   ],
   aurubis_crate: [
     'Eine Kupfer-Versandkiste. Zielgenau platziert. Anders als du.',
-    'Aurubis-Kiste blockiert. Lieferung verzögert um eine Wiedergeburt.',
+    'Frachtkiste blockiert. Lieferung verzögert um eine Wiedergeburt.',
   ],
   copper_ingot: [
     'Tonnenweise Kupfer. Tonnenweise Schande.',
@@ -109,31 +115,34 @@ export const DEATH_QUOTES = {
 export const HELGA_GREETINGS = [
   'Du schon wieder. Versuch diesmal, nicht sofort zu sterben.',
   'Willkommen zurück. Dein Pferd hat dich vermisst. Vermutlich.',
-  'Ich sehe, du hast Sterne gesammelt. Wie niedlich.',
-  'Du riechst nach Anstrengung und Enttäuschung. Willkommen.',
+  'Moin. Ich seh, du hast Sterne gesammelt. Wie niedlich.',
+  'Du riechst nach Schwefel und Enttäuschung. Willkommen.',
   'Heutiges Sonderangebot: alles, was du dir leisten kannst.',
   'Die Impfausweise füllen sich nicht von selbst aus, weißt du.',
+  'Glotz nicht so. Hier ist die Sattelkammer, kein Streichelzoo.',
+  'Schicht zu Ende? Oder bist du wieder zu früh getürmt?',
 ];
 
 export const HELGA_FAREWELLS = [
-  'Bring mir bitte etwas anderes als Schmutz mit.',
+  'Bring mir bitte was Brauchbares mit. Nicht nur Schlacke.',
   'Blamiere das Pferd nicht.',
   'Sisu. Kanalisiere das Sisu.',
   'Die Kampfrichter beobachten dich. Immer.',
+  'Und nicht wieder mit Schlacke an den Stiefeln zurückkommen.',
 ];
 
 export const HELGA_PURCHASE = {
   cheap: ['Bitte. Du tust mir weh.', 'Eine bescheidene Wahl. Für einen bescheidenen Reiter.'],
-  premium: ['DAS nenne ich Handwerkskunst.', 'Endlich eine respektable Anschaffung.'],
-  broke: ['Sterne. Du brauchst Sterne. Hast du an Verdienen gedacht?', 'Komm wieder, wenn du Geld hast.'],
+  premium: ['DAS nenne ich Handwerkskunst.', 'Endlich was Vernünftiges. Wie ein A-Posten.'],
+  broke: ['Sterne. Du brauchst Sterne. Hast du an Verdienen gedacht?', 'Komm wieder, wenn was im Säckel ist.'],
 };
 
 export const WORLDS = [
-  { id: 1, name: 'AURUBIS: Hüttenhalle',    skyTop: '#6a4a3a', skyBot: '#c08858', soil: '#3a2a26', grass: '#7a5a44', accent: '#b56a3a', distance: 0 },
-  { id: 2, name: 'AURUBIS: Schmelzwerk',    skyTop: '#4a2a2a', skyBot: '#a04830', soil: '#2a1a18', grass: '#6a3a28', accent: '#d28858', distance: 600 },
-  { id: 3, name: 'AURUBIS: Drahtzieherei',  skyTop: '#2a3a5a', skyBot: '#4a5a8a', soil: '#1a2030', grass: '#4a5a70', accent: '#b56a3a', distance: 1800 },
-  { id: 4, name: 'AURUBIS: Anodenhof',      skyTop: '#1a1a2a', skyBot: '#3a3a4a', soil: '#0a0a14', grass: '#2a2a3a', accent: '#d28858', distance: 3500 },
-  { id: 5, name: 'AURUBIS: Der Schmelztiegel', skyTop: '#6a1a2a', skyBot: '#ff5a20', soil: '#1a0606', grass: '#6a1a0a', accent: '#ffaa55', distance: 6000 },
+  { id: 1, name: 'CUPRION: Hüttenhalle',    skyTop: '#6a4a3a', skyBot: '#c08858', soil: '#3a2a26', grass: '#7a5a44', accent: '#b56a3a', distance: 0 },
+  { id: 2, name: 'CUPRION: Schmelzwerk',    skyTop: '#4a2a2a', skyBot: '#a04830', soil: '#2a1a18', grass: '#6a3a28', accent: '#d28858', distance: 600 },
+  { id: 3, name: 'CUPRION: Drahtzieherei',  skyTop: '#2a3a5a', skyBot: '#4a5a8a', soil: '#1a2030', grass: '#4a5a70', accent: '#b56a3a', distance: 1800 },
+  { id: 4, name: 'CUPRION: Anodenhof',      skyTop: '#1a1a2a', skyBot: '#3a3a4a', soil: '#0a0a14', grass: '#2a2a3a', accent: '#d28858', distance: 3500 },
+  { id: 5, name: 'CUPRION: Der Schmelztiegel', skyTop: '#6a1a2a', skyBot: '#ff5a20', soil: '#1a0606', grass: '#6a1a0a', accent: '#ffaa55', distance: 6000 },
 ];
 
 export function worldFor(distance) {
@@ -151,11 +160,11 @@ export function pickRandom(arr) {
 // Strings — UI labels
 export const STRINGS = {
   title: 'COPPER RIDERS',
-  subtitle: 'ein Steckenpferd-Roguelite',
+  subtitle: 'Vom IAZ bis zum Dock, Hobby Horse macht Bock',
   best: 'BESTE',
   coins: 'STERNE',
   gallop: 'LOSREITEN!',
-  tackRoom: "HELGAS SATTELKAMMER",
+  tackRoom: "JENSERS SATTELKAMMER",
   tackRoomShort: 'SATTELKAMMER',
   judgeComment: 'RICHTERSPRUCH',
   distance: 'DISTANZ',
