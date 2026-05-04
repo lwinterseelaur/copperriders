@@ -2,6 +2,7 @@ import * as Save from '../save.js';
 import { sfx } from '../audio.js';
 import { GAME_WIDTH, GAME_HEIGHT } from '../config.js';
 import { STRINGS, COMPANY_TAGLINE } from '../data.js';
+import { fetchScores } from '../api.js';
 
 export class MenuScene extends Phaser.Scene {
   constructor() { super('Menu'); }
@@ -63,7 +64,7 @@ export class MenuScene extends Phaser.Scene {
       letterSpacing: 4,
     }).setOrigin(0.5);
 
-    const decor = this.add.image(GAME_WIDTH / 2, 290, 'horse_standalone').setScale(5);
+    const decor = this.add.image(GAME_WIDTH / 2 - 220, 320, 'horse_standalone').setScale(4);
     this.tweens.add({ targets: decor, angle: -8, duration: 700, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
 
     const coins = Save.get('coins');
@@ -71,17 +72,74 @@ export class MenuScene extends Phaser.Scene {
     this.add.text(72, 18, `★ ${coins}  ${STRINGS.coins}`, { fontFamily: 'Courier New, monospace', fontSize: '20px', color: '#ffd86b', fontStyle: 'bold' });
     this.add.text(GAME_WIDTH - 16, 18, `${STRINGS.best}  ${best}m`, { fontFamily: 'Courier New, monospace', fontSize: '20px', color: '#f0e7d8' }).setOrigin(1, 0);
 
-    this.makeButton(GAME_WIDTH / 2, 410, 280, 50, STRINGS.gallop, () => {
+    this.makeButton(GAME_WIDTH / 2 - 220, 410, 280, 50, STRINGS.gallop, () => {
       sfx.click();
       this.scene.start('Game');
     });
-    this.makeButton(GAME_WIDTH / 2, 472, 280, 38, STRINGS.tackRoom, () => {
+    this.makeButton(GAME_WIDTH / 2 - 220, 472, 280, 38, STRINGS.tackRoom, () => {
       sfx.click();
       this.scene.start('Shop', { fromMenu: true });
     });
 
+    // Leaderboard panel on the right
+    this.renderLeaderboardPanel();
+
     this.input.keyboard.on('keydown-SPACE', () => { sfx.click(); this.scene.start('Game'); });
     this.input.keyboard.on('keydown-S', () => { sfx.click(); this.scene.start('Shop', { fromMenu: true }); });
+  }
+
+  renderLeaderboardPanel() {
+    const panelX = GAME_WIDTH / 2 + 144;
+    const panelY = 320;
+    const panelW = 320;
+    const panelH = 200;
+
+    // Backing panel with Aurubis blue header strip
+    this.add.rectangle(panelX, panelY, panelW, panelH, 0x0a1c2c, 0.92).setStrokeStyle(2, 0x0076A7);
+    this.add.rectangle(panelX, panelY - panelH / 2 + 14, panelW, 28, 0x0076A7, 1);
+    this.add.text(panelX, panelY - panelH / 2 + 14, 'BESTENLISTE', {
+      fontFamily: 'Courier New, monospace', fontSize: '15px', color: '#ffffff', fontStyle: 'bold', letterSpacing: 2,
+    }).setOrigin(0.5);
+
+    this.scoreLoadingText = this.add.text(panelX, panelY, 'lade…', {
+      fontFamily: 'Courier New, monospace', fontSize: '14px', color: '#7a8a9a', fontStyle: 'italic',
+    }).setOrigin(0.5);
+
+    this.fetchAndRenderScores(panelX, panelY, panelW, panelH);
+  }
+
+  async fetchAndRenderScores(panelX, panelY, panelW, panelH) {
+    const scores = await fetchScores({ limit: 10 });
+    if (this.scoreLoadingText) this.scoreLoadingText.destroy();
+
+    if (!scores || scores.length === 0) {
+      this.add.text(panelX, panelY, 'noch keine Einträge.\nSei der Erste!', {
+        fontFamily: 'Courier New, monospace', fontSize: '13px', color: '#7a8a9a',
+        align: 'center', fontStyle: 'italic',
+      }).setOrigin(0.5);
+      return;
+    }
+
+    const startY = panelY - panelH / 2 + 40;
+    const rowH = 18;
+
+    // Column headers
+    this.add.text(panelX - panelW / 2 + 16, startY, '#', { fontFamily: 'Courier New, monospace', fontSize: '11px', color: '#7a8a9a' });
+    this.add.text(panelX - panelW / 2 + 44, startY, 'NAME', { fontFamily: 'Courier New, monospace', fontSize: '11px', color: '#7a8a9a' });
+    this.add.text(panelX + panelW / 2 - 110, startY, 'DISTANZ', { fontFamily: 'Courier New, monospace', fontSize: '11px', color: '#7a8a9a' });
+    this.add.text(panelX + panelW / 2 - 38, startY, '★', { fontFamily: 'Courier New, monospace', fontSize: '11px', color: '#7a8a9a' });
+
+    const myName = Save.get('playerName') || '';
+
+    scores.forEach((s, i) => {
+      const y = startY + 18 + i * rowH;
+      const isMe = myName && s.name === myName;
+      const color = isMe ? '#ffd86b' : (i === 0 ? '#ffe600' : '#f0e7d8');
+      this.add.text(panelX - panelW / 2 + 16, y, `${i + 1}.`, { fontFamily: 'Courier New, monospace', fontSize: '13px', color });
+      this.add.text(panelX - panelW / 2 + 44, y, s.name.slice(0, 14), { fontFamily: 'Courier New, monospace', fontSize: '13px', color, fontStyle: isMe ? 'bold' : 'normal' });
+      this.add.text(panelX + panelW / 2 - 110, y, `${s.distance}m`, { fontFamily: 'Courier New, monospace', fontSize: '13px', color });
+      this.add.text(panelX + panelW / 2 - 38, y, `${s.stars}`, { fontFamily: 'Courier New, monospace', fontSize: '13px', color });
+    });
   }
 
   // Draw a small filled isoceles triangle in Aurubis blue (logo motif)

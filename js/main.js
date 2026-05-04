@@ -16,6 +16,11 @@ const config = {
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
   },
+  // DOM container so we can drop an HTML <input> on the death screen
+  // for the leaderboard name entry.
+  dom: {
+    createContainer: true,
+  },
   physics: {
     default: 'arcade',
     arcade: {

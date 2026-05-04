@@ -1,0 +1,12 @@
+{
+  "name": "copperriders-api",
+  "version": "1.0.0",
+  "description": "Azure Functions backend for Copper Riders highscore",
+  "main": "index.js",
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@azure/data-tables": "^13.2.2"
+  }
+}

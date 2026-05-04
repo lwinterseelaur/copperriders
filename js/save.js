@@ -9,6 +9,7 @@ const DEFAULT = {
   horses: { starter: true }, // id -> owned
   selectedHorse: 'starter',
   achievements: {},
+  playerName: '', // remembered for global leaderboard submissions
 };
 
 let cache = null;
