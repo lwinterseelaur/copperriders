@@ -43,6 +43,11 @@ module.exports = async function (context, req) {
     };
   } catch (err) {
     context.log.error('getScores failed:', err);
-    context.res = { status: 500, body: { error: 'internal error' } };
+    // Surfacing message + name for debugging. We can re-mask later.
+    context.res = {
+      status: 500,
+      headers: { 'content-type': 'application/json' },
+      body: { error: err.message || String(err), name: err.name, stack: (err.stack || '').slice(0, 600) },
+    };
   }
 };
