@@ -84,10 +84,6 @@ module.exports = async function (context, req) {
     };
   } catch (err) {
     context.log.error('postScore failed:', err);
-    context.res = {
-      status: 500,
-      headers: { 'content-type': 'application/json' },
-      body: { error: err.message || String(err), name: err.name, stack: (err.stack || '').slice(0, 600) },
-    };
+    context.res = { status: 500, body: { error: 'internal error' } };
   }
 };
