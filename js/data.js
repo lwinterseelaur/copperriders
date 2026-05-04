@@ -45,70 +45,73 @@ export const COMPANY_TAGLINE = 'KUPFER IN BEWEGUNG';
 // Legacy export kept so other modules still import without breaking
 export const AURUBIS_TAGLINE = COMPANY_TAGLINE;
 
+// Death quotes are all about failing the obstacle/dressage course —
+// the player gets eliminated from the show, not injured. We deliberately
+// avoid any framing that resembles a real workplace incident.
 export const DEATH_QUOTES = {
   cable_spool: [
-    'Eine Kabeltrommel. Hundert Kilo Kupferdraht. Du.',
-    'Die Spule rollt nicht. Du auch nicht mehr.',
+    'An der Kabeltrommel hängengeblieben. Stilnote 1,2.',
+    'Die Spule blieb stehen. Du auch. Punkteabzug.',
   ],
   chemical_drum: [
-    'Das Fass war beschriftet. Lesen wäre eine Option gewesen.',
-    'Chemikalienunfall. Lieferschein folgt.',
+    'Das Fass war hübsch markiert. Du hast es trotzdem touchiert.',
+    'Hindernis nicht gemeistert. Die Jury seufzt vereint.',
   ],
   copper_sheet: [
     'Eine Kupferplatte. Senkrecht. Wie die Lernkurve.',
-    '99,99% rein. Genauso wie deine Verlegenheit.',
+    '99,99 % rein. Genauso wie deine Verlegenheit.',
   ],
   steam_vent: [
-    'Heißer Dampf. Heiße Schande.',
-    'Das Ventil pfeift seit Stunden. Du hast es ignoriert.',
+    'Bücken vergessen. Die Jury winkt mit dem Kärtchen.',
+    'Das Ventil pfeift. Du wirst ausgepfiffen.',
   ],
   aurubis_crate: [
-    'Eine Kupfer-Versandkiste. Zielgenau platziert. Anders als du.',
-    'Frachtkiste blockiert. Lieferung verzögert um eine Wiedergeburt.',
+    'Eine Frachtkiste. Zielgenau platziert. Du leider auch.',
+    'Lieferung blockiert. Reiter blockiert. Pause.',
   ],
   copper_ingot: [
     'Tonnenweise Kupfer. Tonnenweise Schande.',
     'Ein Kupferbarren. 99,99 % rein. Du: 0,01 % aufmerksam.',
-    'Die Kathodenplatte hält. Du nicht.',
+    'Die Kathodenplatte stand. Du strauchelst. Disqualifiziert.',
   ],
   wire_coil: [
-    'In Kupferdraht verwickelt. Ein klassisches Ende.',
-    'Die Spule wog mehr als deine Hoffnungen.',
+    'Im Kupferdraht verheddert. Ein klassischer Patzer.',
+    'Die Spule blieb liegen. Deine Punkte auch.',
   ],
   slag: [
-    'Schlacke ist heiß. Wer hätte das gedacht.',
-    'Glühende Schlacke ist kein Hindernis. Es ist eine Lektion.',
+    'Slalom um die Schlacke? Eher Slalom durch die Schlacke.',
+    'Glühende Schlacke ist umzureiten. Theoretisch.',
   ],
   hanging_pipe: [
-    'Bücken war eine Option. Eine, die du nicht genutzt hast.',
-    'Das Rohr hängt seit zwanzig Jahren. Du hingst nur drei Sekunden.',
+    'Bücken war eine Option. Eine, die du nicht gewählt hast.',
+    'Das Rohr hängt seit zwanzig Jahren. Du hast es übersehen.',
   ],
   anode_plate: [
-    'Die Anode hat überlebt. Du nicht.',
-    'Eine Anodenplatte besiegt dich. Eine. Anodenplatte.',
+    'Anodenplatte verfehlt. Stilnote: ungenügend.',
+    'Eine Anodenplatte schlägt dich. Eine. Anodenplatte.',
   ],
   arc_spark: [
-    'Lichtbogen. 12.000 Volt. Stoffpferd. Schlechte Mischung.',
-    'Du wurdest galvanisiert. Im wörtlichsten Sinne.',
+    'Funkenflug. Stilbruch. Die Jury rauft sich die Haare.',
+    'Bücken war auf der Checkliste. Punkt 4. Vergessen.',
   ],
   hi_vis: [
     'Worte tun weh. Besonders bei sechzig Pixeln pro Sekunde.',
-    'Der Sicherheitsbeauftragte hatte recht. Du warst die Gefahr.',
+    'Der Vorarbeiter hat dir winkend signalisiert. Du hast gewinkt zurück.',
   ],
   forklift: [
-    'Der Gabelstapler weicht keinem Steckenpferd.',
-    'Vorfahrt nicht beachtet. Vorfahrt war: Gabelstapler.',
+    'Der Gabelstapler hat Vorfahrt. Immer.',
+    'Vorfahrt nicht beachtet. Pause beendet.',
   ],
   drone: [
     'Kameradrohne hat alles aufgezeichnet. Cringe-Compilation läuft.',
     'Die Inspektionsdrohne notiert: ungenügend.',
   ],
   generic: [
-    'Die Menge ist nach Hause gegangen. Sie hatte Termine.',
+    'Die Menge ist nach Hause gegangen. Hatte Termine.',
     'Dein Steckenpferd-Pass wurde widerrufen.',
     '0,0 von der russischen Jury.',
-    'Helga aktualisiert deinen Impfausweis. Posthum.',
-    'Die Dressur war in Ordnung. Das Sterben nicht.',
+    'Jenser aktualisiert deinen Impfausweis. Mit roter Tinte.',
+    'Die Dressur war in Ordnung. Der Rest nicht.',
   ],
 };
 
