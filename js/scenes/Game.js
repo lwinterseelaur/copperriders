@@ -246,7 +246,12 @@ export class GameScene extends Phaser.Scene {
     this.keyEsc = this.input.keyboard.addKey('ESC');
     // Prevent browser default for these keys (otherwise SPACE scrolls the page,
     // ESC exits fullscreen, etc., and Phaser may not see the keydown)
-    this.input.keyboard.addCapture('SPACE,ESC,UP,DOWN,W,S');
+    // Capture keys that have a browser default we want to suppress
+    // (SPACE = scroll page, ESC = exit fullscreen, arrows = scroll).
+    // Do NOT capture W or S — they have no browser default and capturing them
+    // calls preventDefault() globally, breaking text inputs (e.g. typing S
+    // into the leaderboard name field).
+    this.input.keyboard.addCapture('SPACE,ESC,UP,DOWN');
 
     // Pause on ESC. Use 'keydown-ESC' on the scene's keyboard to catch the
     // event reliably even if the key object's listener got detached.
