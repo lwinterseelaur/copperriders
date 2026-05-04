@@ -5,6 +5,7 @@ import { worldFor, HORSES, STRINGS, COMPANY_NAME, COMPANY_LOCATION, COMPANY_TAGL
 
 const GROUND_Y = GAME_HEIGHT - 32;
 const PLAYER_X = 110;
+const MAX_HP = 2; // hard cap on player health regardless of upgrades
 
 const D = {
   sky: 0,
@@ -67,8 +68,8 @@ export class GameScene extends Phaser.Scene {
         * (upgrades.yarn_mane ? 1.1 : 1)
         * (upgrades.leotard ? 1.2 : 1)
         * (upgrades.breeder ? 1.2 : 1),
-      // Durability: carbon stick +1
-      durability: horse.durability + (upgrades.carbon_stick ? 1 : 0),
+      // Durability: capped at MAX_HP regardless of horse + upgrades
+      durability: Math.min(MAX_HP, horse.durability + (upgrades.carbon_stick ? 1 : 0)),
       luck: horse.luck,
       // Magnet: pockets +30 px, breeder gives extra +10 from style
       magnet: 50 + (upgrades.pockets ? 36 : 0),
@@ -243,9 +244,15 @@ export class GameScene extends Phaser.Scene {
     this.keyW = this.input.keyboard.addKey('W');
     this.keyS = this.input.keyboard.addKey('S');
     this.keyEsc = this.input.keyboard.addKey('ESC');
+    // Prevent browser default for these keys (otherwise SPACE scrolls the page,
+    // ESC exits fullscreen, etc., and Phaser may not see the keydown)
+    this.input.keyboard.addCapture('SPACE,ESC,UP,DOWN,W,S');
 
-    this.keyEsc.on('down', () => {
+    // Pause on ESC. Use 'keydown-ESC' on the scene's keyboard to catch the
+    // event reliably even if the key object's listener got detached.
+    this.input.keyboard.on('keydown-ESC', () => {
       if (!this.alive) return;
+      if (this.scene.isPaused()) return;
       this.scene.pause();
       this.showPause();
     });
@@ -655,7 +662,7 @@ export class GameScene extends Phaser.Scene {
     sfx.coin();
     sfx.doubleJump();
     if (kind === 'shield') {
-      this.health += 1;
+      this.health = Math.min(MAX_HP, this.health + 1);
       this.hud.powerup.setText(STRINGS.shieldGained);
       this.time.delayedCall(2000, () => this.hud.powerup.setText(''));
       this.cameras.main.flash(200, 200, 220, 255);
