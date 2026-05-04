@@ -253,13 +253,14 @@ export class GameScene extends Phaser.Scene {
     // into the leaderboard name field).
     this.input.keyboard.addCapture('SPACE,ESC,UP,DOWN');
 
-    // Pause on ESC. Use 'keydown-ESC' on the scene's keyboard to catch the
-    // event reliably even if the key object's listener got detached.
+    // Pause via internal flag rather than Phaser's scene.pause(), so the
+    // scene keeps receiving keyboard events (otherwise the resume keydown
+    // would never fire).
+    this.gamePaused = false;
     this.input.keyboard.on('keydown-ESC', () => {
       if (!this.alive) return;
-      if (this.scene.isPaused()) return;
-      this.scene.pause();
-      this.showPause();
+      if (this.gamePaused) this.hidePause();
+      else this.showPause();
     });
 
     // Touch / pointer
@@ -285,6 +286,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   update(time, deltaMs) {
+    if (this.gamePaused) return; // freeze gameplay but keep input alive
     const dt = deltaMs / 1000;
 
     if (!this.alive) {
@@ -898,27 +900,36 @@ export class GameScene extends Phaser.Scene {
   }
 
   showPause() {
-    const overlay = this.add.image(GAME_WIDTH / 2, GAME_HEIGHT / 2, 'panel_dark')
+    if (this.gamePaused) return;
+    this.gamePaused = true;
+
+    this.pauseOverlay = this.add.image(GAME_WIDTH / 2, GAME_HEIGHT / 2, 'panel_dark')
       .setDisplaySize(GAME_WIDTH, GAME_HEIGHT).setScrollFactor(0).setDepth(200);
-    const txt = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 16, STRINGS.paused,
-      { fontFamily: 'Courier New, monospace', fontSize: '32px', color: '#ffd86b' })
+    this.pauseTitle = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 30, STRINGS.paused,
+      { fontFamily: 'Courier New, monospace', fontSize: '40px', color: '#ffd86b', fontStyle: 'bold' })
       .setOrigin(0.5).setScrollFactor(0).setDepth(201);
-    const sub = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 18, STRINGS.pauseHint,
-      { fontFamily: 'Courier New, monospace', fontSize: '14px', color: '#f0e7d8' })
+    this.pauseSub = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 16, STRINGS.pauseHint,
+      { fontFamily: 'Courier New, monospace', fontSize: '16px', color: '#f0e7d8' })
       .setOrigin(0.5).setScrollFactor(0).setDepth(201);
-    const onResume = () => {
-      overlay.destroy(); txt.destroy(); sub.destroy();
-      this.input.keyboard.off('keydown-ESC', onResume);
-      this.input.keyboard.off('keydown-M', onMenu);
-      this.scene.resume();
-    };
-    const onMenu = () => {
-      this.input.keyboard.off('keydown-ESC', onResume);
-      this.input.keyboard.off('keydown-M', onMenu);
-      this.scene.resume();
+
+    // M = back to main menu (handled in this scene's keydown-M listener; we
+    // attach it lazily here so it only fires while paused).
+    this.pauseMenuHandler = () => {
+      this.hidePause();
       this.scene.start('Menu');
     };
-    this.input.keyboard.once('keydown-ESC', onResume);
-    this.input.keyboard.once('keydown-M', onMenu);
+    this.input.keyboard.on('keydown-M', this.pauseMenuHandler);
+  }
+
+  hidePause() {
+    if (!this.gamePaused) return;
+    this.gamePaused = false;
+    if (this.pauseOverlay) this.pauseOverlay.destroy();
+    if (this.pauseTitle) this.pauseTitle.destroy();
+    if (this.pauseSub) this.pauseSub.destroy();
+    if (this.pauseMenuHandler) {
+      this.input.keyboard.off('keydown-M', this.pauseMenuHandler);
+      this.pauseMenuHandler = null;
+    }
   }
 }

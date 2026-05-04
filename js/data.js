@@ -176,6 +176,7 @@ export const STRINGS = {
   total: 'gesamt',
   again: 'NOCHMAL',
   back: 'ZURÜCK',
+  menu: 'HAUPTMENÜ',
   paused: 'PAUSIERT',
   pauseHint: 'ESC zum Fortsetzen · M für Menü',
   upgrades: 'UPGRADES',

@@ -69,14 +69,30 @@ export class DeathScene extends Phaser.Scene {
       }).setOrigin(0.5);
     }
 
-    this.makeButton(GAME_WIDTH / 2 - 200, GAME_HEIGHT - 36, 180, 42, STRINGS.again, () => {
+    // Three buttons centered on the bottom row: again | menu | shop
+    const btnY = GAME_HEIGHT - 36;
+    this.makeButton(GAME_WIDTH / 2 - 290, btnY, 170, 42, STRINGS.again, () => {
       sfx.click();
+      this.cleanupKeyHandler();
       this.scene.start('Game');
     });
-    this.makeButton(GAME_WIDTH / 2 + 20, GAME_HEIGHT - 36, 240, 42, STRINGS.tackRoomShort, () => {
+    this.makeButton(GAME_WIDTH / 2 - 90, btnY, 180, 42, STRINGS.menu, () => {
       sfx.click();
+      this.cleanupKeyHandler();
+      this.scene.start('Menu');
+    });
+    this.makeButton(GAME_WIDTH / 2 + 120, btnY, 200, 42, STRINGS.tackRoomShort, () => {
+      sfx.click();
+      this.cleanupKeyHandler();
       this.scene.start('Shop');
     });
+  }
+
+  cleanupKeyHandler() {
+    if (this.keyHandler) {
+      this.input.keyboard.off('keydown', this.keyHandler);
+      this.keyHandler = null;
+    }
   }
 
   // === Phaser-native single-line text input ===
